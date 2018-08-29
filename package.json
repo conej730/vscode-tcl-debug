@@ -1,16 +1,16 @@
 {
-	"name": "mock-debug",
-	"displayName": "Mock Debug",
+	"name": "tcl-debug",
+	"displayName": "Tcl Debug",
 	"version": "0.27.0",
-	"publisher": "andreweinand",
-	"description": "Starter extension for developing debug adapters for VS Code.",
+	"publisher": "flightaware",
+	"description": "Debugging (local, remote) for Tcl",
 	"author": {
-		"name": "Microsoft Corporation",
-		"email": "aweinand@microsoft.com"
+		"name": "Jonathan Cone",
+		"email": "jonathan.cone@flightaware.com"
 	},
 	"license": "MIT",
 	"keywords": [
-		"multi-root ready"
+		"Debuggers"
 	],
 	"engines": {
 		"vscode": "^1.18.0",
@@ -41,7 +41,8 @@
 	"dependencies": {
 		"await-notify": "1.0.1",
 		"vscode-debugadapter": "1.27.0",
-		"vscode-debugprotocol": "1.27.0"
+		"vscode-debugprotocol": "1.27.0",
+		"vscode-nls": "^3.2.4"
 	},
 	"devDependencies": {
 		"@types/node": "7.0.55",
@@ -55,71 +56,199 @@
 	},
 	"main": "./out/extension",
 	"activationEvents": [
-		"onDebug",
-		"onCommand:extension.mock-debug.getProgramName"
+		"onDebug"
 	],
 	"contributes": {
 		"breakpoints": [
 			{
-				"language": "markdown"
+				"language": "tcl"
 			}
 		],
 		"debuggers": [
 			{
-				"type": "mock",
-				"label": "Mock Debug",
-				"program": "./out/debugAdapter.js",
-				"runtime": "node",
+				"type": "tcl",
+				"label": "Tcl Debug",
+				"languages": [
+					"tcl"
+				],
+				"program": "./out/tcl/tclDebug.tcl",
+				"runtime": "tclsh",
+				"initialConfigurations": [
+					{
+						"type": "tcl",
+						"request": "launch",
+						"name": "%tcl.launch.config.name%",
+						"program": "${file}",
+						"stopOnEntry": true,
+						"console": "integratedTerminal"
+					},
+					{
+						"name": "%tcl.attach.config.name%",
+						"type": "tcl",
+						"request": "attach",
+						"port": 5678,
+						"host": "localhost"
+					}
+				],
 				"configurationAttributes": {
 					"launch": {
-						"required": [
-							"program"
-						],
 						"properties": {
 							"program": {
 								"type": "string",
-								"description": "Absolute path to a text file.",
-								"default": "${workspaceFolder}/${command:AskForProgramName}"
+								"description": "Absolute path to the program..",
+								"default": "${file}"
+							},
+							"tclPath": {
+								"type": "string",
+								"description": "Path (fully qualified) to tcl executable. Defaults to the value in settings.json",
+								"default": "${config:tcl.tclPath}"
+							},
+							"args": {
+								"type": "array",
+								"description": "Command line arguments passed to the program",
+								"default": [],
+								"items": {
+									"type": "string"
+								}
 							},
 							"stopOnEntry": {
 								"type": "boolean",
 								"description": "Automatically stop after launch.",
 								"default": true
 							},
+							"console": {
+								"enum": [
+									"none",
+									"integratedTerminal",
+									"externalTerminal"
+								],
+								"description": "Where to launch the debug target: internal console, integrated terminal, or external terminal.",
+								"default": "integratedTerminal"
+							},
 							"trace": {
 								"type": "boolean",
 								"description": "Enable logging of the Debug Adapter Protocol.",
 								"default": true
+							},
+							"cwd": {
+								"type": "string",
+								"description": "Absolute path to the working directory of the program being debugged. Default is the root directory of the file (leave empty).",
+								"default": "${workspaceFolder}"
+							},
+							"env": {
+								"type": "object",
+								"description": "Environment variables defined as a key value pair. Property ends up being the Environment Variable and the value of the property ends up being the value of the Env Variable.",
+								"default": {}
+							},
+							"envFile": {
+								"type": "string",
+								"description": "Absolute path to a file containing environment variable definitions.",
+								"default": "${workspaceFolder}/.env"
+							},
+							"port": {
+								"type": "number",
+								"description": "Debug port (default is 0, resulting in the use of a dynamic port).",
+								"default": 0
+							},
+							"host": {
+								"type": "string",
+								"description": "IP address of the of the local debug server (default is localhost).",
+								"default": "localhost"
+							}
+						}
+					},
+					"attach": {
+						"required": [
+							"port"
+						],
+						"properties": {
+							"port": {
+								"type": "number",
+								"description": "Debug port to attach",
+								"default": 0
+							},
+							"host": {
+								"type": "string",
+								"description": "IP Address of the of remote server (default is localhost or use 127.0.0.1).",
+								"default": "localhost"
+							},
+							"pathMappings": {
+								"type": "array",
+								"label": "Path mappings.",
+								"items": {
+									"type": "object",
+									"label": "Path mapping",
+									"required": [
+										"localRoot",
+										"remoteRoot"
+									],
+									"properties": {
+										"localRoot": {
+											"type": "string",
+											"label": "Local source root.",
+											"default": "${workspaceFolder}"
+										},
+										"remoteRoot": {
+											"type": "string",
+											"label": "Remote source root.",
+											"default": ""
+										}
+									}
+								},
+								"default": []
 							}
 						}
 					}
 				},
-				"initialConfigurations": [
-					{
-						"type": "mock",
-						"request": "launch",
-						"name": "Ask for file name",
-						"program": "${workspaceFolder}/${command:AskForProgramName}",
-						"stopOnEntry": true
-					}
-				],
 				"configurationSnippets": [
 					{
-						"label": "Mock Debug: Launch",
-						"description": "A new configuration for 'debugging' a user selected markdown file.",
+						"label": "Tcl: Terminal (integrated)",
+						"description": "%tcl.launch.terminal.description%",
 						"body": {
-							"type": "mock",
+							"name": "Tcl: Terminal (integrated)",
+							"type": "tcl",
 							"request": "launch",
-							"name": "Ask for file name",
-							"program": "^\"\\${workspaceFolder}/\\${command:AskForProgramName}\"",
+							"program": "^\"\\${file}\"",
+							"console": "integratedTerminal",
 							"stopOnEntry": true
 						}
+					},
+					{
+						"label": "Tcl: Terminal (external)",
+						"description": "%tcl.launch.externalTerminal.description%",
+						"body": {
+							"name": "Tcl: Terminal (external)",
+							"type": "tcl",
+							"request": "launch",
+							"program": "^\"\\${file}\"",
+							"console": "externalTerminal"
+						}
+					},
+					{
+						"label": "Tcl: Attach",
+						"description": "%tcl.launch.attach.description%",
+						"body": {
+							"name": "Attach (Remote Debug)",
+							"type": "tcl",
+							"request": "attach",
+							"port": 5678,
+							"host": "localhost"
+						}
 					}
-				],
-				"variables": {
-					"AskForProgramName": "extension.mock-debug.getProgramName"
+				]
+			}
+		],
+		"configuration": {
+			"type": "object",
+			"title": "Tcl Configuration",
+			"properties": {
+				"tcl.tclPath": {
+					"type": "string",
+					"default": "tclsh",
+					"description": "Path to Tcl, you can use a custom version of Tcl by modifying this setting to include the full path.",
+					"scope": "resource"
 				}
 			}
-		]
+		}
 	}
 }

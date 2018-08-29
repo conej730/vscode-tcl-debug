@@ -1,0 +1,23 @@
+{
+	"tcl.label": "Tcl",
+
+	"tcl.launch.config.name": "Tcl: Current File",
+	"tcl.attach.config.name": "Tcl: Attach",
+
+	"tcl.launch.program.description": "Absolute path to the program.",
+	"tcl.launch.args.description": "Command line arguments passed to the program.",
+	"tcl.launch.cwd.description": "Absolute path to the working directory of the program being debugged.",
+	"tcl.launch.runtimeExecutable.description": "Absolute path to the runtime executable to be used. Default is the runtime executable on the PATH.",
+	"tcl.launch.runtimeArgs.description": "Optional arguments passed to the runtime executable.",
+	"tcl.launch.env.description": "Environment variables passed to the program.",
+	"tcl.launch.console.description": "Where to launch the debug target.",
+	"tcl.launch.console.internalConsole.description": "VS Code Debug Console (which doesn't support to read input from a program)",
+	"tcl.launch.console.integratedTerminal.description": "VS Code's integrated terminal",
+	"tcl.launch.console.externalTerminal.description": "external terminal that can be configured via user settings",
+	"tcl.launch.terminal.description": "Debug a TCL program with Integrated Terminal/Console",
+	"tcl.launch.externalTerminal.description": "Debug a TCL program with an external Terminal/Console",
+	"tcl.launch.attach.description": "Attached",
+
+	"tcl.attach.port.description": "Debug port to attach to.",
+	"tcl.attach.address.description": "TCP/IP address. Default is \"localhost\"."
+}
