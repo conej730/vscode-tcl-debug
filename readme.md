@@ -1,8 +1,8 @@
-# VS Code Mock Debug
+# VS Code Tcl Debug
 
-This is a starter sample for developing VS Code debug adapters.
+This is an extension for debugging Tcl code.
 
-**Mock Debug** simulates a debug adapter for Visual Studio Code.
+**Tcl Debug** implements a debug adapter for Visual Studio Code.
 It supports *step*, *continue*, *breakpoints*, *exceptions*, and
 *variable access* but it is not connected to any real debugger.
 
@@ -14,7 +14,7 @@ More information about how to develop a new debug adapter can be found
 Or discuss debug adapters on Gitter:
 [![Gitter Chat](https://img.shields.io/badge/chat-online-brightgreen.svg)](https://gitter.im/Microsoft/vscode)
 
-## Using Mock Debug
+## Using Tcl Debug
 
 * Install the **Mock Debug** extension in VS Code.
 * Create a new 'program' file `readme.md` and enter several lines of arbitrary text.
