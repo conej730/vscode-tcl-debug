@@ -30,7 +30,7 @@
 	},
 	"scripts": {
 		"prepublish": "tsc -p ./src",
-		"compile": "tsc -p ./src",
+		"compile": "tsc -p ./src && cp -r ./src/tcl/* ./out/tcl/",
 		"tslint": "tslint ./src/**/*.ts",
 		"watch": "tsc -w -p ./src",
 		"test": "mocha -u tdd ./out/tests/",
@@ -79,15 +79,17 @@
 						"request": "launch",
 						"name": "%tcl.launch.config.name%",
 						"program": "${file}",
-						"stopOnEntry": true,
-						"console": "integratedTerminal"
+						"stopOnEntry": false,
+						"console": "integratedTerminal",
+						"args": []
 					},
 					{
 						"name": "%tcl.attach.config.name%",
 						"type": "tcl",
 						"request": "attach",
 						"port": 5678,
-						"host": "localhost"
+						"host": "localhost",
+						"args": []
 					}
 				],
 				"configurationAttributes": {
@@ -210,7 +212,7 @@
 							"request": "launch",
 							"program": "^\"\\${file}\"",
 							"console": "integratedTerminal",
-							"stopOnEntry": true
+							"stopOnEntry": false
 						}
 					},
 					{
@@ -242,7 +244,7 @@
 			"type": "object",
 			"title": "Tcl Configuration",
 			"properties": {
-				"tcl.tclPath": {
+				"tcl.tclshPath": {
 					"type": "string",
 					"default": "tclsh",
 					"description": "Path to Tcl, you can use a custom version of Tcl by modifying this setting to include the full path.",

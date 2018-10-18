@@ -9,7 +9,7 @@ import { WorkspaceFolder, DebugConfiguration, ProviderResult, CancellationToken 
 
 export function activate(context: vscode.ExtensionContext) {
 
-	// register a configuration provider for 'mock' debug type
+	// register a configuration provider for 'tcl' debug type
 	const provider = new TclConfigurationProvider()
 	context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider('tcl', provider));
 	context.subscriptions.push(provider);
