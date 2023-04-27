@@ -52,7 +52,7 @@
 		"vscode": "1.1.17",
 		"vscode-debugadapter-testsupport": "1.27.0",
 		"tslint": "5.9.1",
-		"vsce": "1.37.5"
+		"vsce": "1.103.1"
 	},
 	"main": "./out/extension",
 	"activationEvents": [
